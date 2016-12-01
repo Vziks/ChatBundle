@@ -1,0 +1,39 @@
+{
+    "name": "hush/chat-bundle",
+    "type": "symfony-bundle",
+    "description": "Hush ChatBundle",
+    "keywords": ["Symfony2 ChatBundle"],
+    "homepage": "https://github.com/hushker/ChatBundle",
+    "authors": [
+        {
+            "name": "Zharkov Vadim",
+            "email": "hushker@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^5.5.9 || ^7.0",
+        "symfony/framework-bundle": "^2.8 || ^3.0",
+    },
+    "require-dev": {
+
+    },
+    "conflict": {
+
+    },
+    "autoload": {
+        "psr-4": {
+            "Hush\\ChatBundle\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hush\\ChatBundle\\Tests\\": "Tests/"
+        }
+    },
+    "support": {
+        "docs": "https://github.com/hushker/ChatBundle"
+    }
+}
