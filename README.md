@@ -92,7 +92,7 @@ php app/console sonata:media:fix-media-context
 Регистрируем сервис в services.yml
 ```yml
 chat:
-    class      Hush\ChatBundle\Service\ChatService
+    class:      Hush\ChatBundle\Service\ChatService
     arguments:    ["@service_container"]
 ```
 

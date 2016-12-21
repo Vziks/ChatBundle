@@ -55,7 +55,6 @@ class ChatService implements ContainerAwareInterface
         $result = $this->getDoctrine()->getManager()->createNativeQuery($sql, $rsm)
             ->setParameter('user_id', $user->getId())
             ->getResult();
-        //var_dump($result);
         $list = [];
         foreach ($result as $row) {
             $list[] = $row['id'];
