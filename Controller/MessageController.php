@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * Chat Rest Api Controller
@@ -27,8 +28,13 @@ class MessageController extends Controller
 
     /**
      * @Route("/messages/unreaded")
+     * @Method("GET")
+     * @ApiDoc(
+     *     description = "Возвращает непрочитанные сообщения авторизованного пользователя",
+     *     section = "ChatBundle"
+     * )
      */
-    public function unreadedMessagesAction()
+    public function getUnreadedMessagesAction()
     {
         $messages = $this->getChat()->getUnreadedMessages($this->getUser());
         return $this->makeResponse($messages);
@@ -36,8 +42,13 @@ class MessageController extends Controller
 
     /**
      * @Route("/messages/last")
+     * @Method("GET")
+     * @ApiDoc(
+     *     description = "Возвращает список последних сообщений во всех диалогах",
+     *     section = "ChatBundle"
+     * )
      */
-    public function dialogsAction()
+    public function getLastMessagesAction()
     {
         $messages = $this->getChat()->getLastMessages($this->getUser());
         return $this->makeResponse($messages);
@@ -45,6 +56,11 @@ class MessageController extends Controller
 
     /**
      * @Route("/messages/dialogs/{id}")
+     * @Method("GET")
+     * @ApiDoc(
+     *     description = "Возвращает список сообщений в диалоге по id собеседника",
+     *     section = "ChatBundle"
+     * )
      */
     public function dialogMessagesAction($id)
     {
@@ -57,6 +73,28 @@ class MessageController extends Controller
     /**
      * @Route("/messages")
      * @Method("POST")
+     * @ApiDoc(
+     *     description = "Отправляет сообщение пользователю",
+     *     section = "ChatBundle",
+     *     requirements={
+     *         {
+     *             "name"="recipient_id",
+     *             "dataType"="integer",
+     *             "requirement"="\d+",
+     *             "description"="Id получателя сообщения"
+     *         },
+     *         {
+     *             "name"="message",
+     *             "dataType"="string",
+     *             "description"="Текст сообщения"
+     *          },
+     *         {
+     *             "name"="attachment[]",
+     *             "dataType"="file",
+     *             "description"="Файлы картинок в сообщении"
+     *          },
+     *     },
+     * )
      */
     public function sendMessageAction(Request $request)
     {
@@ -91,6 +129,14 @@ class MessageController extends Controller
 
     /**
      * @Route("/messages/{id}/read")
+     * @Method("PUT")
+     * @ApiDoc(
+     *     description = "Отмечает сообщение как прочитанное",
+     *     section = "ChatBundle",
+     *     parameters={
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="message id"}
+     *     }
+     * )
      */
     public function readMessageAction($id)
     {
@@ -104,37 +150,7 @@ class MessageController extends Controller
         $this->getChat()->readMessage($message);
         return new JsonResponse();
     }
-
-    /**
-     * @Route("/messages/test")
-     */
-    public function testAction()
-    {
-        $message = $this->getDoctrine()->getRepository('ChatBundle:Message')->find(2);
-        $media = $this->getDoctrine()->getRepository('ApplicationSonataMediaBundle:Media')->find(8);
-        $messageMedia = new MessageMedia();
-        $messageMedia->setMedia($media);
-        $message->addMessageMedia($messageMedia);
-        $this->getDoctrine()->getManager()->persist($message);
-        $this->getDoctrine()->getManager()->flush();
-
-
-        /*
-        $mediaManager = $this->container->get('sonata.media.manager.media');
-        $media = new Media();
-        $media->setBinaryContent('d:\Hush\test.png');
-        $mediaManager->save($media, 'message', 'sonata.media.provider.image');
-        die('test');
-        */
-    }
-
-    /**
-     * @Route("/messages/{id}")
-     */
-    public function getMessageAction($id)
-    {
-
-    }
+    
 
     /**
      * @return ChatService
