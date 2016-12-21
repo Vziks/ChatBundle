@@ -18,8 +18,9 @@ class ChatService implements ContainerAwareInterface
     }
 
     /**
+     * Возвращает список непрочитанных сообщений пользователя
      * @param User $user
-     * @return mixed
+     * @return array
      */
     public function getUnreadedMessages(User $user)
     {
@@ -33,8 +34,9 @@ class ChatService implements ContainerAwareInterface
     }
 
     /**
+     * Возвращает по одному последнему сообщению из всех диалогов пользователя
      * @param User $user
-     * @return mixed
+     * @return array
      */
     public function getLastMessages(User $user)
     {
@@ -67,6 +69,7 @@ class ChatService implements ContainerAwareInterface
     }
 
     /**
+     * Возвращает переписку пользователя $user с $collocutor
      * @param User $user
      * @param User $collocutor
      */
@@ -83,6 +86,13 @@ class ChatService implements ContainerAwareInterface
         return $query->getResult();
     }
 
+    /**
+     * Отправляет сообщение
+     * @param User $user
+     * @param User $recipient
+     * @param $text
+     * @return Message
+     */
     public function sendMessage(User $user, User $recipient, $text)
     {
         $message = new Message();
@@ -101,6 +111,10 @@ class ChatService implements ContainerAwareInterface
 
     }
 
+    /**
+     * Отмечает сообщение как прочитанное
+     * @param Message $message
+     */
     public function readMessage(Message $message)
     {
         $message->setReaded(true);

@@ -15,11 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class MessageController
- * @package Hush\ChatBundle\Controller
- *
- * php app/console sonata:media:fix-media-context
- * php_fileinfo extension
+ * Chat Rest Api Controller
  */
 class MessageController extends Controller
 {
