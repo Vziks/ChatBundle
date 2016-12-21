@@ -2,6 +2,9 @@
 
 namespace Hush\ChatBundle\Entity;
 
+use Application\Sonata\MediaBundle\Entity\Media;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use AppBundle\Entity\User as User;
 use JsonSerializable;
@@ -40,6 +43,12 @@ class Message implements JsonSerializable
      * @var User
      */
     private $sender;
+
+
+    /**
+     * @var Collection
+     */
+    private $mediaList;
 
 
     /**
@@ -166,6 +175,30 @@ class Message implements JsonSerializable
     {
         return $this->sender;
     }
+
+
+    public function __construct()
+
+    {
+        $this->mediaList = new ArrayCollection();
+    }
+
+    public function addMessageMedia(MessageMedia $messageMedia)
+    {
+        $messageMedia->setMessage($this);
+        $this->mediaList->add($messageMedia);
+    }
+
+    public function getMediaList()
+    {
+        return $this->mediaList;
+    }
+
+    public function removeMessageMedia(MessageMedia $messageMedia)
+    {
+        $this->mediaList->removeElement($messageMedia);
+    }
+
 
     public function jsonSerialize()
     {

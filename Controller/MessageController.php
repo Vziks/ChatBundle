@@ -2,14 +2,25 @@
 
 namespace Hush\ChatBundle\Controller;
 
+use Application\Sonata\MediaBundle\Entity\Media;
 use Hush\ChatBundle\Entity\Message;
+use Hush\ChatBundle\Entity\MessageMedia;
 use Hush\ChatBundle\Service\ChatService;
+use Hush\ChatBundle\Service\MessageSerializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class MessageController
+ * @package Hush\ChatBundle\Controller
+ *
+ * php app/console sonata:media:fix-media-context
+ * php_fileinfo extension
+ */
 class MessageController extends Controller
 {
 
@@ -41,7 +52,9 @@ class MessageController extends Controller
      */
     public function dialogMessagesAction($id)
     {
-        $messages = $this->getChat()->getDialogs($this->getUser());
+        $userManager = $this->container->get('fos_user.user_manager');
+        $collocutor = $userManager->findUserBy(['id' => $id]);
+        $messages = $this->getChat()->getDialogMessages($this->getUser(), $collocutor);
         return $this->makeResponse($messages);
     }
 
@@ -55,9 +68,28 @@ class MessageController extends Controller
         $text = $request->request->get('message');
         $userManager = $this->container->get('fos_user.user_manager');
 
-        $recipient = $userManager->findUserBy(['id' => $recipient_id]);
 
-        $this->getChat()->sendMessage($this->getUser(), $recipient, $text);
+        $recipient = $userManager->findUserBy(['id' => $recipient_id]);
+        $message = $this->getChat()->sendMessage($this->getUser(), $recipient, $text);
+
+        if ($request->files->has('attachment')) {
+            /**
+             * @var UploadedFile $upload
+             */
+            foreach ($request->files->get('attachment') as $upload) {
+                //var_dump($upload);
+                $mediaManager = $this->container->get('sonata.media.manager.media');
+                $media = new Media();
+                $media->setBinaryContent($upload);
+                $mediaManager->save($media, 'message', 'sonata.media.provider.image');
+                $messageMedia = new MessageMedia();
+                $messageMedia->setMedia($media);
+                $message->addMessageMedia($messageMedia);
+
+            }
+        }
+        $this->getDoctrine()->getManager()->flush();
+
         return new JsonResponse();
     }
 
@@ -75,6 +107,29 @@ class MessageController extends Controller
         ]);
         $this->getChat()->readMessage($message);
         return new JsonResponse();
+    }
+
+    /**
+     * @Route("/messages/test")
+     */
+    public function testAction()
+    {
+        $message = $this->getDoctrine()->getRepository('ChatBundle:Message')->find(2);
+        $media = $this->getDoctrine()->getRepository('ApplicationSonataMediaBundle:Media')->find(8);
+        $messageMedia = new MessageMedia();
+        $messageMedia->setMedia($media);
+        $message->addMessageMedia($messageMedia);
+        $this->getDoctrine()->getManager()->persist($message);
+        $this->getDoctrine()->getManager()->flush();
+
+
+        /*
+        $mediaManager = $this->container->get('sonata.media.manager.media');
+        $media = new Media();
+        $media->setBinaryContent('d:\Hush\test.png');
+        $mediaManager->save($media, 'message', 'sonata.media.provider.image');
+        die('test');
+        */
     }
 
     /**
@@ -96,9 +151,15 @@ class MessageController extends Controller
         return $this->chat;
     }
 
-    protected function makeResponse($data)
+    /**
+     * @param $messages
+     * @return JsonResponse
+     */
+    protected function makeResponse($messages)
     {
-        return new JsonResponse($data);
+        $serializer = new MessageSerializer($this->container);
+        $json = $serializer->serializeMessages($messages);
+        return new JsonResponse($json);
     }
 
 }
