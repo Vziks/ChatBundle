@@ -6,7 +6,7 @@ use Application\Sonata\MediaBundle\Entity\Media;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use AppBundle\Entity\User as User;
+use FOS\UserBundle\Model\User as User;
 use JsonSerializable;
 
 /**

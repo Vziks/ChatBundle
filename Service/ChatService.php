@@ -6,7 +6,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Hush\ChatBundle\Entity\Message;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use AppBundle\Entity\User as User;
+use FOS\UserBundle\Model\User as User;
 
 class ChatService implements ContainerAwareInterface
 {
