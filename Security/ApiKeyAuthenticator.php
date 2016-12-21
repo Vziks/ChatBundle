@@ -22,22 +22,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 
     public function createToken(Request $request, $providerKey)
     {
-        // look for an apikey query parameter
-        $apiKey = $request->query->get('apikey');
-
-        //$apiKey = $request->cookies->get('apikey');
-        /*
-		if (empty($apiKey)){
-			$apiKey = $request->headers->get('apikey');
-		}
-		if (empty($apiKey) && $request->query->has('apikey')) {
-			$apiKey = $request->query->get('apikey');
-		}
-        */
-
-        // or if you want to use an "apikey" header, then do something like this:
-        // $apiKey = $request->headers->get('apikey');
-
+        $apiKey = $request->headers->get('apikey');
         if (!$apiKey) {
             throw new BadCredentialsException('No API key found');
         }
@@ -50,19 +35,10 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
     {
         $apiKey = $token->getCredentials();
         $username = $this->userProvider->getUsernameForApiKey($apiKey);
-
         if (!$username) {
-            //$token = new \Symfony\Component\Security\Core\Authentication\Token\AnonymousToken();
             return null;
-            //throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
-            /*
-            throw new AuthenticationException(
-                    sprintf('API Key "%s" does not exist.', $apiKey));
-             */
         }
-
         $user = $this->userProvider->loadUserByUsername($username);
-
         return new PreAuthenticatedToken($user, $apiKey, $providerKey,
             $user->getRoles());
     }
