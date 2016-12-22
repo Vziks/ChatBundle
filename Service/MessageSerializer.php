@@ -13,6 +13,8 @@ class MessageSerializer implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
+    protected $dateFormat = 'd.m.Y H:i:s';
+
     public function __construct($container)
     {
         $this->setContainer($container);
@@ -40,9 +42,12 @@ class MessageSerializer implements ContainerAwareInterface
         $item = [
             'id' => $message->getId(),
             'sender_id' => $message->getSender()->getId(),
+            'sender_name' => $message->getSender()->getUsername(),
             'recipient_id' => $message->getRecipient()->getId(),
+            'recipient_name' => $message->getRecipient()->getUsername(),
             'text' => $message->getText(),
-            'date' => $message->getDate()->format('c')
+            'date' => $message->getDate()->format($this->dateFormat),
+            'readed' => $message->isReaded() ? true : false
         ];
         $item['attachments'] = [];
         foreach ($message->getMediaList() as $messageMedia) {
@@ -53,16 +58,14 @@ class MessageSerializer implements ContainerAwareInterface
             $provider = $this->container->get($media->getProviderName());
             $pool = $this->container->get('sonata.media.pool');
             $formats = $pool->getContext('message')['formats'];
-
-
             $attachment = [
                 'original' => [
                     'url' => $this->getRequest()->getUriForPath($provider->generatePublicUrl($media, 'reference')),
                     'width' => $media->getWidth(),
-                    'height' => $media->getHeight()
+                    'height' => $media->getHeight(),
+                    'size' => $media->getSize()
                 ]
             ];
-            //var_dump($formats);
             foreach ($formats as $name => $format) {
                 $attachment[substr($name, strlen('message_'))] = [
                     'url' => $this->getRequest()->getUriForPath($provider->generatePublicUrl($media, $provider->getFormatName($media, $name))),

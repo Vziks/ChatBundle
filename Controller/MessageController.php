@@ -27,20 +27,124 @@ class MessageController extends Controller
     protected $chat;
 
     /**
+     * # Возвращает непрочитанные сообщения #
+     * ## Ответ в случае успеха ##
+     *
+     *     {
+     *       "success": true,
+     *       "data": [
+     *           {
+     *               "id": 1,
+     *               "sender_id": 1,
+     *               "sender_name": "Иванов",
+     *               "recipient_id": 2,
+     *               "recipient_name": "Петров"
+     *               "text": "Текст сообщения",
+     *               "date": "22.12.2016 14:44:55",
+     *               "readed": true,
+     *               "attachments": [
+     *                   {
+     *                       "original": {
+     *                           "url": "http://domain/full/path/to/image.jpg",
+     *                           "width": 1024,
+     *                           "height": 768,
+     *                           "size": 623888
+     *                       },
+     *                       "format1": {
+     *                           "url": "http://domain/full/path/to/image_format1.jpg",
+     *                           "width": 300,
+     *                           "height": 100
+     *                       },
+     *                       "format2": {
+     *                           "url": "http://domain/full/path/to/image_format2.jpg",
+     *                           "width": 100,
+     *                           "height": 30
+     *                       },
+     *                       ...
+     *                   }
+     *               ]
+     *           },
+     *           ...
+     *       ]
+     *     }
+     * У каждой записи в attachments есть объект original, передающий информацию об исходном изображении.
+     * Размер картинки (width, height), размер файла (size), ссылка на оригинальный файл (url).
+     * Кроме оригинала добавляется несколько форматов тамбов, настроенных в sonata media bundle для контекста message.
+     *
+     *
+     * ## Ответ в случае ошибки ##
+     *
+     *     {
+     *       "success": false,
+     *       "error": "Текст ошибки"
+     *     }
+     *
      * @Route("/messages/unreaded")
      * @Method("GET")
      * @ApiDoc(
-     *     description = "Возвращает непрочитанные сообщения авторизованного пользователя",
+     *     description = "Возвращает непрочитанные сообщения",
      *     section = "ChatBundle"
      * )
      */
     public function getUnreadedMessagesAction()
     {
         $messages = $this->getChat()->getUnreadedMessages($this->getUser());
-        return $this->makeResponse($messages);
+        return $this->makeMessagesResponse($messages);
     }
 
     /**
+     * # Возвращает список последних сообщений во всех диалогах #
+     * ## Ответ в случае успеха ##
+     *
+     *     {
+     *       "success": true,
+     *       "data": [
+     *           {
+     *               "id": 1,
+     *               "sender_id": 1,
+     *               "sender_name": "Иванов",
+     *               "recipient_id": 2,
+     *               "recipient_name": "Петров"
+     *               "text": "Текст сообщения",
+     *               "date": "22.12.2016 14:44:55",
+     *               "readed": true,
+     *               "attachments": [
+     *                   {
+     *                       "original": {
+     *                           "url": "http://domain/full/path/to/image.jpg",
+     *                           "width": 1024,
+     *                           "height": 768,
+     *                           "size": 623888
+     *                       },
+     *                       "format1": {
+     *                           "url": "http://domain/full/path/to/image_format1.jpg",
+     *                           "width": 300,
+     *                           "height": 100
+     *                       },
+     *                       "format2": {
+     *                           "url": "http://domain/full/path/to/image_format2.jpg",
+     *                           "width": 100,
+     *                           "height": 30
+     *                       },
+     *                       ...
+     *                   }
+     *               ]
+     *           },
+     *           ...
+     *       ]
+     *     }
+     * У каждой записи в attachments есть объект original, передающий информацию об исходном изображении.
+     * Размер картинки (width, height), размер файла (size), ссылка на оригинальный файл (url).
+     * Кроме оригинала добавляется несколько форматов тамбов, настроенных в sonata media bundle для контекста message.
+     *
+     *
+     * ## Ответ в случае ошибки ##
+     *
+     *     {
+     *       "success": false,
+     *       "error": "Текст ошибки"
+     *     }
+     *
      * @Route("/messages/last")
      * @Method("GET")
      * @ApiDoc(
@@ -51,45 +155,158 @@ class MessageController extends Controller
     public function getLastMessagesAction()
     {
         $messages = $this->getChat()->getLastMessages($this->getUser());
-        return $this->makeResponse($messages);
+        return $this->makeMessagesResponse($messages);
     }
 
     /**
+     * # Возвращает список сообщений в диалоге по id собеседника #
+     * ## Ответ в случае успеха ##
+     *
+     *     {
+     *       "success": true,
+     *       "data": [
+     *           {
+     *               "id": 1,
+     *               "sender_id": 1,
+     *               "sender_name": "Иванов",
+     *               "recipient_id": 2,
+     *               "recipient_name": "Петров"
+     *               "text": "Текст сообщения",
+     *               "date": "22.12.2016 14:44:55",
+     *               "readed": true,
+     *               "attachments": [
+     *                   {
+     *                       "original": {
+     *                           "url": "http://domain/full/path/to/image.jpg",
+     *                           "width": 1024,
+     *                           "height": 768,
+     *                           "size": 623888
+     *                       },
+     *                       "format1": {
+     *                           "url": "http://domain/full/path/to/image_format1.jpg",
+     *                           "width": 300,
+     *                           "height": 100
+     *                       },
+     *                       "format2": {
+     *                           "url": "http://domain/full/path/to/image_format2.jpg",
+     *                           "width": 100,
+     *                           "height": 30
+     *                       },
+     *                       ...
+     *                   }
+     *               ]
+     *           },
+     *           ...
+     *       ]
+     *     }
+     * У каждой записи в attachments есть объект original, передающий информацию об исходном изображении.
+     * Размер картинки (width, height), размер файла (size), ссылка на оригинальный файл (url).
+     * Кроме оригинала добавляется несколько форматов тамбов, настроенных в sonata media bundle для контекста message.
+     *
+     *
+     * ## Ответ в случае ошибки ##
+     *
+     *     {
+     *       "success": false,
+     *       "error": "Текст ошибки"
+     *     }
+     *
      * @Route("/messages/dialogs/{id}")
      * @Method("GET")
      * @ApiDoc(
      *     description = "Возвращает список сообщений в диалоге по id собеседника",
-     *     section = "ChatBundle"
+     *     section = "ChatBundle",
+     *     requirements={
+     *         {
+     *             "name"="id",
+     *             "dataType"="integer",
+     *             "requirement"="\d+",
+     *             "description"="Id собеседника"
+     *         }
+     *     }
      * )
      */
-    public function dialogMessagesAction($id)
+    public function getDialogMessagesAction($id)
     {
         $userManager = $this->container->get('fos_user.user_manager');
         $collocutor = $userManager->findUserBy(['id' => $id]);
         $messages = $this->getChat()->getDialogMessages($this->getUser(), $collocutor);
-        return $this->makeResponse($messages);
+        return $this->makeMessagesResponse($messages);
     }
 
     /**
+     * # Отправляет сообщение пользователю #
+     * ## Ответ в случае успеха ##
+     *
+     *     {
+     *       "success": true,
+     *       "data": [
+     *           {
+     *               "id": 1,
+     *               "sender_id": 1,
+     *               "sender_name": "Иванов",
+     *               "recipient_id": 2,
+     *               "recipient_name": "Петров"
+     *               "text": "Текст сообщения",
+     *               "date": "22.12.2016 14:44:55",
+     *               "readed": true,
+     *               "attachments": [
+     *                   {
+     *                       "original": {
+     *                           "url": "http://domain/full/path/to/image.jpg",
+     *                           "width": 1024,
+     *                           "height": 768,
+     *                           "size": 623888
+     *                       },
+     *                       "format1": {
+     *                           "url": "http://domain/full/path/to/image_format1.jpg",
+     *                           "width": 300,
+     *                           "height": 100
+     *                       },
+     *                       "format2": {
+     *                           "url": "http://domain/full/path/to/image_format2.jpg",
+     *                           "width": 100,
+     *                           "height": 30
+     *                       },
+     *                       ...
+     *                   }
+     *               ]
+     *           }
+     *       ]
+     *     }
+     * У каждой записи в attachments есть объект original, передающий информацию об исходном изображении.
+     * Размер картинки (width, height), размер файла (size), ссылка на оригинальный файл (url).
+     * Кроме оригинала добавляется несколько форматов тамбов, настроенных в sonata media bundle для контекста message.
+     *
+     *
+     * ## Ответ в случае ошибки ##
+     *
+     *     {
+     *       "success": false,
+     *       "error": "Текст ошибки"
+     *     }
+     *
      * @Route("/messages")
      * @Method("POST")
      * @ApiDoc(
      *     description = "Отправляет сообщение пользователю",
      *     section = "ChatBundle",
-     *     requirements={
+     *     parameters={
      *         {
      *             "name"="recipient_id",
      *             "dataType"="integer",
-     *             "requirement"="\d+",
+     *             "required"=true,
      *             "description"="Id получателя сообщения"
      *         },
      *         {
      *             "name"="message",
+     *             "required"=true,
      *             "dataType"="string",
      *             "description"="Текст сообщения"
      *          },
      *         {
      *             "name"="attachment[]",
+     *             "required"=false,
      *             "dataType"="file",
      *             "description"="Файлы картинок в сообщении"
      *          },
@@ -123,18 +340,36 @@ class MessageController extends Controller
             }
         }
         $this->getDoctrine()->getManager()->flush();
-
-        return new JsonResponse();
+        return $this->makeMessagesResponse([$message]);
     }
 
     /**
+     * # Отмечает сообщение как прочитанное #
+     * ## Ответ в случае успеха ##
+     *
+     *     {
+     *       "success": true
+     *     }
+     *
+     * ## Ответ в случае ошибки ##
+     *
+     *     {
+     *       "success": false,
+     *       "error": "Текст ошибки"
+     *     }
+     *
      * @Route("/messages/{id}/read")
      * @Method("PUT")
      * @ApiDoc(
      *     description = "Отмечает сообщение как прочитанное",
      *     section = "ChatBundle",
-     *     parameters={
-     *         {"name"="id", "dataType"="integer", "required"=true, "description"="message id"}
+     *     requirements={
+     *         {
+     *             "name"="id",
+     *             "dataType"="integer",
+     *             "requirement"="\d+",
+     *             "description"="Id сообщения"
+     *         }
      *     }
      * )
      */
@@ -150,7 +385,7 @@ class MessageController extends Controller
         $this->getChat()->readMessage($message);
         return new JsonResponse();
     }
-    
+
 
     /**
      * @return ChatService
@@ -167,11 +402,13 @@ class MessageController extends Controller
      * @param $messages
      * @return JsonResponse
      */
-    protected function makeResponse($messages)
+    protected function makeMessagesResponse($messages)
     {
         $serializer = new MessageSerializer($this->container);
-        $json = $serializer->serializeMessages($messages);
-        return new JsonResponse($json);
+        return new JsonResponse([
+            'success' => true,
+            'data' => $serializer->serializeMessages($messages)
+        ]);
     }
 
 }
