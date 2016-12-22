@@ -6,7 +6,7 @@ ChatBundle расширяет функционал symfony, добавляя в�
 Зависимости:
  - [FosUserBundle](https://symfony.com/doc/master/bundles/FOSUserBundle/index.html)
  - [Sonata Media Bundle](https://sonata-project.org/bundles/media/master/doc/index.html)
- - [NelmioApiDocBundle](https://github.com/nelmio/NelmioApiDocBundle)
+ - [NelmioApiDocBundle](https://github.com/nelmio/NelmioApiDocBundle) (Опционально для просмотра API документации)
 
 Возможности:
 - ChatService реализует сервис - функции для обмена сообщениями. В том числе добавлять медиафайлы (картинки) к сообщениям.
@@ -119,4 +119,4 @@ security:
 
 Также необходимо реализовать метод аутентификации пользователя.
 Например по определённому [apikey](http://symfony.com/doc/current/security/api_key_authentication.html) пользователя.
-
+Для просмотра документации Chat Bundle Rest API необходимо установить и настроить [NelmioApiDocBundle](https://github.com/nelmio/NelmioApiDocBundle).
