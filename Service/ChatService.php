@@ -122,6 +122,27 @@ class ChatService implements ContainerAwareInterface
     }
 
     /**
+     * @param $messages
+     * @return array
+     */
+    public function serializeMessages($messages)
+    {
+        $serializer=$this->getMessageSerializer();
+        $json = [];
+        foreach ($messages as $message) {
+            $json[] = $serializer->serializeMessage($message);
+        }
+        return $json;
+    }
+
+    /**
+     * @return MessageSerializerInterface
+     */
+    protected function getMessageSerializer(){
+        return $this->container->get($this->container->getParameter('chat.message.serializer'));
+    }
+
+    /**
      * @return Registry
      */
     protected function getDoctrine()

@@ -80,6 +80,7 @@ sonata_media:
 ```php
 php app/console sonata:media:fix-media-context
 ```
+
 Использование
 ---------------------------------------
 
@@ -120,3 +121,31 @@ security:
 Также необходимо реализовать метод аутентификации пользователя.
 Например по определённому [apikey](http://symfony.com/doc/current/security/api_key_authentication.html) пользователя.
 Для просмотра документации Chat Bundle Rest API необходимо установить и настроить [NelmioApiDocBundle](https://github.com/nelmio/NelmioApiDocBundle).
+
+Кастомизация сериализации сообщений
+---------------------------------------
+При необходимости можно использовать свой способ сераилизации сообщений.
+Для этого необходимо реализовать свой сервис, реализующий интерфейс \Hush\ChatBundle\Service\MessageSerializerInterface
+Например:
+```php
+class MyMessageSerializer implements MessageSerializerInterface
+{
+    public function serializeMessage(Message $message)
+    {
+        return [
+            'someparam' => 'somevalue'
+        ];
+    }
+}
+```
+Зарегистрировать его в services.yml
+```yml
+services:
+    myserializer:
+        class:     AppBundle\Service\MyMessageSerializer
+```
+И указать его в config.yml
+```yml
+chat:
+    message_serializer: myserializer
+```

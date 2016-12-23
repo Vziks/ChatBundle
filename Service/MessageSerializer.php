@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
 
-class MessageSerializer implements ContainerAwareInterface
+class MessageSerializer implements ContainerAwareInterface, MessageSerializerInterface
 {
     use ContainerAwareTrait;
 
@@ -18,19 +18,6 @@ class MessageSerializer implements ContainerAwareInterface
     public function __construct($container)
     {
         $this->setContainer($container);
-    }
-
-    /**
-     * @param $messages
-     * @return array
-     */
-    public function serializeMessages($messages)
-    {
-        $json = [];
-        foreach ($messages as $message) {
-            $json[] = $this->serializeMessage($message);
-        }
-        return $json;
     }
 
     /**

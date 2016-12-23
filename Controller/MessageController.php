@@ -404,10 +404,9 @@ class MessageController extends Controller
      */
     protected function makeMessagesResponse($messages)
     {
-        $serializer = new MessageSerializer($this->container);
         return new JsonResponse([
             'success' => true,
-            'data' => $serializer->serializeMessages($messages)
+            'data' => $this->getChat()->serializeMessages($messages)
         ]);
     }
 
