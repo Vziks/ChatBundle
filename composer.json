@@ -1,18 +1,21 @@
 {
-    "name": "hush/chat-bundle",
+    "name": "vziks/chat-bundle",
     "type": "symfony-bundle",
     "description": "Hush ChatBundle",
     "keywords": ["Symfony2 ChatBundle"],
-    "homepage": "https://github.com/hushker/ChatBundle",
+    "homepage": "https://github.com/Vziks/ChatBundle",
     "authors": [
         {
             "name": "Zharkov Vadim",
             "email": "hushker@gmail.com"
+        },
+        {
+            "name": "Anton Prokhorov",
+            "email": "svziks@gmail.com"
         }
     ],
     "require": {
-        "php": "^5.5.9 || ^7.0",
-        "symfony/framework-bundle": "^2.8 || ^3.0"
+        "php": "^5.5.9 || ^7.0"
     },
     "require-dev": {
 
@@ -34,6 +37,6 @@
         }
     },
     "support": {
-        "docs": "https://github.com/hushker/ChatBundle"
+        "docs": "https://github.com/Vziks/ChatBundle"
     }
 }
