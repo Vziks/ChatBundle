@@ -33,6 +33,23 @@ class ChatService implements ContainerAwareInterface
         return $query->getResult();
     }
 
+
+    /**
+     * Возвращает список непрочитанных сообщений пользователя
+     * @param User $user
+     * @return array
+     */
+    public function getCountUnreadedMessages(User $user)
+    {
+        $query = $this->getDoctrine()->getManager()->createQuery(
+            'select count(m) from ChatBundle:Message m where
+              (m.recipient=:user and m.readed=0)
+              order by m.date desc
+              '
+        )->setParameter('user', $user);
+        return $query->getResult();
+    }
+
     /**
      * Возвращает по одному последнему сообщению из всех диалогов пользователя
      * @param User $user
@@ -78,10 +95,24 @@ class ChatService implements ContainerAwareInterface
           select m from ChatBundle:Message m where
           (m.sender=:user and m.recipient=:collocutor)
           or (m.sender=:collocutor and m.recipient=:user)
-          order by m.date desc
+          order by m.date ASC
         ')
             ->setParameter('user', $user)
             ->setParameter('collocutor', $collocutor);
+        return $query->getResult();
+    }
+
+    public function getChatContacts(User $user)
+    {
+        $query = $this->getDoctrine()->getManager()->createQuery('
+          select m from ChatBundle:Message m where
+          m.sender=:user
+          or m.recipient=:user
+          group by m.recipient, m.sender
+          order by m.date desc
+        ')
+            ->setParameter('user', $user);
+
         return $query->getResult();
     }
 

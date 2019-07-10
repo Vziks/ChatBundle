@@ -2,23 +2,25 @@
 
 namespace Hush\ChatBundle\Controller;
 
-use Application\Sonata\MediaBundle\Entity\Media;
+use App\Application\Sonata\MediaBundle\Entity\Media;
 use Hush\ChatBundle\Entity\Message;
 use Hush\ChatBundle\Entity\MessageMedia;
 use Hush\ChatBundle\Service\ChatService;
 use Hush\ChatBundle\Service\MessageSerializer;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * Chat Rest Api Controller
+ * @Route("/admin/api/v1")
  */
-class MessageController extends Controller
+class MessageController extends FOSRestController
 {
 
     /**
@@ -85,6 +87,7 @@ class MessageController extends Controller
      *     description = "Возвращает непрочитанные сообщения",
      *     section = "ChatBundle"
      * )
+     * @View()
      */
     public function getUnreadedMessagesAction()
     {
@@ -318,6 +321,9 @@ class MessageController extends Controller
         $recipient_id = $request->request->get('recipient_id');
         $text = $request->request->get('message');
         $userManager = $this->container->get('fos_user.user_manager');
+
+//        dump($this->getUser());
+//        die;
 
 
         $recipient = $userManager->findUserBy(['id' => $recipient_id]);

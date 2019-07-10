@@ -1,4 +1,5 @@
 services:
     chat.message.serializer:
+        public: true
         class: Hush\ChatBundle\Service\MessageSerializer
         arguments:    ["@service_container"]

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-  <entity name="Hush\ChatBundle\Entity\Message" table="message">
+  <entity name="Hush\ChatBundle\Entity\Message" table="message" repository-class="Hush\ChatBundle\Repository\MessageRepository">
     <indexes>
       <index name="FK_message_sender_idx" columns="sender_id"/>
       <index name="FK_message_recipient_idx" columns="recipient_id"/>
