@@ -11,6 +11,7 @@ use JsonSerializable;
 
 /**
  * Message
+ * 
  */
 class Message implements JsonSerializable
 {

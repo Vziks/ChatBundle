@@ -81,7 +81,7 @@ class MessageController extends FOSRestController
      *       "error": "Текст ошибки"
      *     }
      *
-     * @Route("/messages/unreaded")
+     * @Route("/messages/unreaded", name="chat_messages_unreaded")
      * @Method("GET")
      * @ApiDoc(
      *     description = "Возвращает непрочитанные сообщения",
@@ -148,7 +148,7 @@ class MessageController extends FOSRestController
      *       "error": "Текст ошибки"
      *     }
      *
-     * @Route("/messages/last")
+     * @Route("/messages/last", name="chat_messages_last")
      * @Method("GET")
      * @ApiDoc(
      *     description = "Возвращает список последних сообщений во всех диалогах",
@@ -214,7 +214,7 @@ class MessageController extends FOSRestController
      *       "error": "Текст ошибки"
      *     }
      *
-     * @Route("/messages/dialogs/{id}")
+     * @Route("/messages/dialogs/{id}", name="chat_messages_dialogs_id")
      * @Method("GET")
      * @ApiDoc(
      *     description = "Возвращает список сообщений в диалоге по id собеседника",
@@ -289,7 +289,7 @@ class MessageController extends FOSRestController
      *       "error": "Текст ошибки"
      *     }
      *
-     * @Route("/messages")
+     * @Route("/messages", name="chat_messages_send")
      * @Method("POST")
      * @ApiDoc(
      *     description = "Отправляет сообщение пользователю",
@@ -321,9 +321,6 @@ class MessageController extends FOSRestController
         $recipient_id = $request->request->get('recipient_id');
         $text = $request->request->get('message');
         $userManager = $this->container->get('fos_user.user_manager');
-
-//        dump($this->getUser());
-//        die;
 
 
         $recipient = $userManager->findUserBy(['id' => $recipient_id]);
@@ -364,7 +361,7 @@ class MessageController extends FOSRestController
      *       "error": "Текст ошибки"
      *     }
      *
-     * @Route("/messages/{id}/read")
+     * @Route("/messages/{id}/read", name="chat_messages_id_read")
      * @Method("PUT")
      * @ApiDoc(
      *     description = "Отмечает сообщение как прочитанное",

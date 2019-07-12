@@ -1,4 +1,5 @@
 <?php
+
 namespace Hush\ChatBundle\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -19,7 +20,9 @@ class ChatService implements ContainerAwareInterface
 
     /**
      * Возвращает список непрочитанных сообщений пользователя
+     *
      * @param User $user
+     *
      * @return array
      */
     public function getUnreadedMessages(User $user)
@@ -34,9 +37,35 @@ class ChatService implements ContainerAwareInterface
     }
 
 
+    public function getUnreadedMessagesByUser(User $user, User $collocutor)
+    {
+
+        $query = $this->getDoctrine()->getManager()->createQuery(
+            'select count(m) from ChatBundle:Message m where
+              (m.recipient=:user and m.readed=0 and m.sender=:collocutor)
+              order by m.date desc
+              '
+        )->setParameter('user', $user)
+            ->setParameter('collocutor', $collocutor);
+        return $query->setMaxResults(1)->getSingleScalarResult();
+    }
+
+
+    public function readAllMessageFromSender(User $user, User $collocutor)
+    {
+
+        $query = $this->getDoctrine()->getManager()->createQuery(
+            'UPDATE ChatBundle:Message m SET m.readed = 1 WHERE (m.recipient=:user and m.readed=0 and m.sender=:collocutor)'
+        )->setParameter('user', $user)
+            ->setParameter('collocutor', $collocutor);
+        return $query->execute();
+    }
+
     /**
      * Возвращает список непрочитанных сообщений пользователя
+     *
      * @param User $user
+     *
      * @return array
      */
     public function getCountUnreadedMessages(User $user)
@@ -52,7 +81,9 @@ class ChatService implements ContainerAwareInterface
 
     /**
      * Возвращает по одному последнему сообщению из всех диалогов пользователя
+     *
      * @param User $user
+     *
      * @return array
      */
     public function getLastMessages(User $user)
@@ -86,6 +117,7 @@ class ChatService implements ContainerAwareInterface
 
     /**
      * Возвращает переписку пользователя $user с $collocutor
+     *
      * @param User $user
      * @param User $collocutor
      */
@@ -118,9 +150,11 @@ class ChatService implements ContainerAwareInterface
 
     /**
      * Отправляет сообщение
+     *
      * @param User $user
      * @param User $recipient
-     * @param $text
+     * @param      $text
+     *
      * @return Message
      */
     public function sendMessage(User $user, User $recipient, $text)
@@ -143,6 +177,7 @@ class ChatService implements ContainerAwareInterface
 
     /**
      * Отмечает сообщение как прочитанное
+     *
      * @param Message $message
      */
     public function readMessage(Message $message)
@@ -154,11 +189,12 @@ class ChatService implements ContainerAwareInterface
 
     /**
      * @param $messages
+     *
      * @return array
      */
     public function serializeMessages($messages)
     {
-        $serializer=$this->getMessageSerializer();
+        $serializer = $this->getMessageSerializer();
         $json = [];
         foreach ($messages as $message) {
             $json[] = $serializer->serializeMessage($message);
@@ -169,7 +205,8 @@ class ChatService implements ContainerAwareInterface
     /**
      * @return MessageSerializerInterface
      */
-    protected function getMessageSerializer(){
+    protected function getMessageSerializer()
+    {
         return $this->container->get($this->container->getParameter('chat.message.serializer'));
     }
 

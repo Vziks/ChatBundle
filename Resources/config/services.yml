@@ -2,4 +2,14 @@ services:
     chat.message.serializer:
         public: true
         class: Hush\ChatBundle\Service\MessageSerializer
-        arguments:    ["@service_container"]
+        arguments:    ['@service_container']
+
+    chat.twig_extension:
+        class: Hush\ChatBundle\Twig\ChatExtension
+        arguments:
+            - '@security.token_storage'
+        calls:
+            - [ 'setContainer', [ '@service_container' ] ]
+        public: false
+        tags:
+            - { name: twig.extension }

@@ -2,6 +2,7 @@
 
 namespace Hush\ChatBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use App\Application\Sonata\MediaBundle\Entity\Media as Media;
 use Hush\ChatBundle\Entity\Message as Message;
 
